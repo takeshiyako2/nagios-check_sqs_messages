@@ -1,6 +1,6 @@
 # nagios-check_sqs_messages
 
-This is nagios plugin for message queue of Amazon SQS.
+This is nagios plugin for message queue of Amazon SQS.  
 You can check count of message queue.
 
 # Setup
