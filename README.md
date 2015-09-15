@@ -19,5 +19,11 @@ if you use aws-sdk-v1, use check_sqs_messages_aws_sdk_v1.rb
 
 ```
 ruby check_sqs_messages.rb -c 10 -w 5 -q <Queue Name> -a <access_key> -s <secret_key> -r <region>
+```
+
+# Example
+
+```
 ruby check_sqs_messages.rb -c 10 -w 5 -q my-queue-name -a XXXX -s YYYY -r ap-northeast-1
+OK - my-queue-name message count is 3 |message=3
 ```
