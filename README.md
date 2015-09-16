@@ -32,7 +32,7 @@ OK - my-queue-name message count is 3 |message=3
 
 # Tips
 
-If you get wrong result?
+If you get wrong result?  
 Check CloudWatch connectivity by AWS CLI
 
 ```
