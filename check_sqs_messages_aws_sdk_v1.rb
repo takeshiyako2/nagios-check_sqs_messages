@@ -42,18 +42,15 @@ end.parse!
 class CheckSQSMessages
 
   def initialize(options)
-    start_time = Time.now - 300
+    start_time = Time.now - 21600 # 6 hours 
     end_time = Time.now
 
+    # init AWS
     AWS.config(
       :access_key_id => options[:access_key],
       :secret_access_key => options[:secret_key],
       :region => options[:region]
     )
-
-    start_time = Time.now - 300
-    end_time = Time.now
-
     cw = AWS::CloudWatch.new
     metric = AWS::CloudWatch::Metric.new('AWS/SQS', 'ApproximateNumberOfMessagesVisible')
     stats = metric.statistics(
@@ -66,10 +63,17 @@ class CheckSQSMessages
       :end_time    => end_time.iso8601
     )
 
-    message = stats.datapoints[0][:average].truncate.to_i
+    # munging data, get last one
+    results = {}
+    stats.each do |datapoints|
+      results[datapoints[:timestamp]] = datapoints[:average]
+    end
+    last_result = results.sort_by{|key,val| key}.last
+    timestamp = last_result[0]
+    message = last_result[1].truncate.to_i
 
     ## puts result
-    information = " - #{options[:queue_name]} message count is #{message} |message=#{message}"
+    information = " - #{options[:queue_name]} message count is #{message}. timestamp #{timestamp.localtime} |message=#{message}"
     if options[:crit].to_i <= message
       puts "CRITICAL" + information
       exit 2
@@ -84,3 +88,4 @@ class CheckSQSMessages
 end
 
 CheckSQSMessages.new(options)
+

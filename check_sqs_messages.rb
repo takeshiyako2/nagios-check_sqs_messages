@@ -42,7 +42,7 @@ end.parse!
 class CheckSQSMessages
 
   def initialize(options)
-    start_time = Time.now - 300
+    start_time = Time.now - 21600 # 6 hours
     end_time = Time.now
 
     client = Aws::CloudWatch::Client.new(
@@ -61,10 +61,18 @@ class CheckSQSMessages
       :start_time  => start_time.iso8601,
       :end_time    => end_time.iso8601
     })
-    message = resp[:datapoints][0][:average].truncate.to_i
+
+    # munging data, get last one
+    results = {}
+    resp[:datapoints].each do |datapoint|
+      results[datapoint[:timestamp]] = datapoint[:average].truncate.to_i
+    end
+    last_result = results.sort_by{|key,val| key}.last
+    timestamp = last_result[0]
+    message = last_result[1].truncate.to_i
 
     ## puts result
-    information = " - #{options[:queue_name]} message count is #{message} |message=#{message}"
+    information = " - #{options[:queue_name]} message count is #{message}. timestamp #{timestamp.localtime} |message=#{message}"
     if options[:crit].to_i <= message
       puts "CRITICAL" + information
       exit 2
