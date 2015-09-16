@@ -3,6 +3,8 @@
 This is nagios plugin for message queue of Amazon SQS.  
 You can check count of message queue.
 
+
+
 # Setup
 
 ```
@@ -27,3 +29,23 @@ ruby check_sqs_messages.rb -c 10 -w 5 -q <Queue Name> -a <access_key> -s <secret
 ruby check_sqs_messages.rb -c 10 -w 5 -q my-queue-name -a XXXX -s YYYY -r ap-northeast-1
 OK - my-queue-name message count is 3 |message=3
 ```
+
+# Tips
+
+If you get wrong result?  
+Check CloudWatch connectivity by AWS CLI
+
+```
+aws cloudwatch get-metric-statistics \
+--region ap-northeast-1 \
+--output json  \
+--namespace  AWS/SQS  \
+--metric-name ApproximateNumberOfMessagesVisible  \
+--dimensions  Name=QueueName,Value=<Queue Name>  \
+--statistics  Average  \
+--period 60  \
+--start-time  2015-09-15T03:04:13Z  \
+--end-time 2015-09-15T03:14:13Z
+```
+
+
