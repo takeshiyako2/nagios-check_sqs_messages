@@ -3,6 +3,22 @@
 This is nagios plugin for message queue of Amazon SQS.  
 You can check count of message queue.
 
+
+# Check CloudWatch connectivity by AWS CLI
+
+```
+aws cloudwatch get-metric-statistics \
+--region ap-northeast-1 \
+--output json  \
+--namespace  AWS/SQS  \
+--metric-name ApproximateNumberOfMessagesVisible  \
+--dimensions  Name=QueueName,Value=<Queue Name>  \
+--statistics  Average  \
+--period 60  \
+--start-time  2015-09-15T03:04:13Z  \
+--end-time 2015-09-15T03:14:13Z
+```
+
 # Setup
 
 ```
