@@ -68,12 +68,20 @@ class CheckSQSMessages
     stats.each do |datapoints|
       results[datapoints[:timestamp]] = datapoints[:average]
     end
+
+    # if no result
+    if results.size == 0
+      puts "UNKNOWN - No result from CloudWatch"
+      exit 3
+    end
+
+    # make text
     last_result = results.sort_by{|key,val| key}.last
     timestamp = last_result[0]
     message = last_result[1].truncate.to_i
-
-    ## puts result
     information = " - #{options[:queue_name]} message count is #{message}. timestamp #{timestamp.localtime} |message=#{message}"
+
+    # puts
     if options[:crit].to_i <= message
       puts "CRITICAL" + information
       exit 2
